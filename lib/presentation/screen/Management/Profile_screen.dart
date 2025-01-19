@@ -1,6 +1,5 @@
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
-import 'package:bachelor_meal_asistance/presentation/uitils/Theme/button_theme_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AuthService authService = AuthService();
   DatabaseHelper databaseHelper = DatabaseHelper();
   UserDatabase userDatabase = UserDatabase();
+  String? userName ;
+  String? email;
 
 
   void getNameRealTime() async {
@@ -27,29 +28,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .ref()
         .child('user')
         .child(auth.currentUser!.uid).child('name');
+    userRef.onValue.listen((DatabaseEvent event){
+      if (event.snapshot.exists) {
+        setState(() {
+          userName = event.snapshot.value as String;
+        });
+      } else {
+        setState(() {
+          userName = "Name not found!";
+        });
+      }
 
-    DataSnapshot snapshot = await userRef.get();
-    if(snapshot.exists){
-      snapshot.value;
-    }else{
-      snapshot.value == null;
-    }
+    });
   }
 
-  void getMail()async
+  void getEmailRealTime()async
   {
-    await userDatabase.getMail();
+    DatabaseReference userRef = FirebaseDatabase.instance
+        .ref()
+        .child('user')
+        .child(auth.currentUser!.uid).child('email');
+    userRef.onValue.listen((DatabaseEvent event){
+      if (event.snapshot.exists) {
+        setState(() {
+          email = event.snapshot.value as String;
+        });
+      } else {
+        setState(() {
+          email = "Name not found!";
+        });
+      }
+
+    });
   }
-
-
-
-
-
-
-
   void signOut (){
     authService.signOut(context);
   }
+  @override
+  void initState() {
+    super.initState();
+    getNameRealTime();
+    getEmailRealTime();
+  }
+
 
 
   @override
@@ -79,10 +100,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: 20,),
-              Text('$getNameRealTime',
+              Text(userName!,
               style: textTheme.headlineLarge,),
               SizedBox(height: 10,),
-              Text('$getMail',
+              Text(email!,
               style: textTheme.headlineMedium,),
               SizedBox(height: 40,),
               Container(
@@ -115,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> JoinGroupPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateGroup()));
                         },
                         style: ElevatedButton.styleFrom(
                             fixedSize: Size(400, 60)
@@ -150,9 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> JoinGroupPage()));
-                        },
+                        onPressed: signOut,
                         style: ElevatedButton.styleFrom(
                             fixedSize: Size(400, 60)
                         ),
