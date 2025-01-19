@@ -20,8 +20,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AuthService authService = AuthService();
   DatabaseHelper databaseHelper = DatabaseHelper();
   UserDatabase userDatabase = UserDatabase();
-  String? userName ;
-  String? email;
+  String userName = 'Loding ...' ;
+  String email = 'Loding ...';
 
 
   void getNameRealTime() async {
@@ -101,10 +101,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: 20,),
-              Text(userName!,
+              Text(userName,
               style: textTheme.headlineLarge,),
               SizedBox(height: 10,),
-              Text(email!,
+              Text(email,
               style: textTheme.headlineMedium,),
               SizedBox(height: 40,),
               Container(

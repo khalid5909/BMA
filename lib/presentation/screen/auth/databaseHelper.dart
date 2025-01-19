@@ -104,6 +104,7 @@ class DatabaseHelper {
 
       };
       await groupRef.set(groupData);
+      await createProfile();
       return;
     } catch (e) {
       throw Exception("Failed to create group");
@@ -220,17 +221,25 @@ class DatabaseHelper {
     }
   }
 
-  Future createProfile()async
-  {
-    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
-
-    Map <String,dynamic> data = {
-      'breakfast':[],
-      'lunch':[],
-      'dinner':[]
-    };
-    databaseReference.update(data);
+  Future createProfile() async {
+    try {
+      final User?  singUpUser = (await auth.currentUser!.uid) as User?;
+      if (singUpUser != null) {
+        DatabaseReference userRef = rlDB.ref().child('user').child(singUpUser as String);
+        Map<String, dynamic> userData = {
+          'breakfirst': [],
+          'lunch':[],
+          'dinner':[],
+        };
+        userRef.update(userData);
+      }
+      return singUpUser;
+    } catch (e)
+    {
+      print("Error during sign-up: $e");
+    }
   }
+
 
   Future addBreakfastMeal({required String meal})async
   {
