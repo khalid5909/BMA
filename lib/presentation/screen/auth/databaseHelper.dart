@@ -1,9 +1,7 @@
-
-import 'package:bachelor_meal_asistance/presentation/screen/home_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/Management/Profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseHelper {
@@ -215,7 +213,9 @@ class DatabaseHelper {
         return [];
       }
     } catch (e) {
-      print("Error fetching members list: $e");
+      if (kDebugMode) {
+        print("Error fetching members list: $e");
+      }
       return [];
     }
   }
@@ -254,7 +254,7 @@ class DatabaseHelper {
   }
 
   Future<void> checkMemberAndRedirect(
-      {required String currentUserEmail,required BuildContext context}) async
+      {required String currentUserEmail,required BuildContext context})async
   {
     try {
       DatabaseReference groupRef = FirebaseDatabase.instance.ref()
@@ -313,28 +313,11 @@ class UserDatabase {
         final user = allUsers[email] as Map<String,dynamic>;
         if(user['email'] == email){
           return user;
-        };
+        }
       }
     }
   }
 
-
-  Future getMail ()async
-  {
-    DatabaseReference userRef = FirebaseDatabase.instance
-        .ref()
-        .child('user')
-        .child(auth.currentUser!.uid)
-        .child('email');
-    userRef.onValue.listen((DatabaseEvent event) {
-      if (event.snapshot.exists) {
-        String name = event.snapshot.value as String;
-        print('Email: $name'); // এখানে 'John Doe' আসবে।
-      } else {
-        print('Email not found!');
-      }
-    });
-  }
 
 }
 

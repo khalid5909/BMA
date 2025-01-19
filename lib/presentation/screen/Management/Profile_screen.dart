@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'createGroup.dart';
 import 'joinGroup.dart';
+import 'notice_screan.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -160,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> JoinGroupPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> NoticeScrean()));
                         },
                         style: ElevatedButton.styleFrom(
                             fixedSize: Size(400, 60)
