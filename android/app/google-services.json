@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "749410592375",
+    "firebase_url": "https://b-m-a-ed8bb-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "b-m-a-ed8bb",
+    "storage_bucket": "b-m-a-ed8bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749410592375:android:263623be27811874010872",
+        "android_client_info": {
+          "package_name": "com.example.bachelor_meal_asistance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDShtrmjLvI0b5oby6mlhGIkaXcAyv5gXc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
