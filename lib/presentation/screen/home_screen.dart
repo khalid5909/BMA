@@ -1,6 +1,8 @@
 import 'package:bachelor_meal_asistance/presentation/screen/Management/joinGroup.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../uitils/Theme/theme.dart';
 import 'Management/createGroup.dart';
@@ -19,7 +21,9 @@ class _HomeScreen extends State<HomeScreen> {
   TextEditingController meal = TextEditingController();
   DatabaseHelper databaseHelper = DatabaseHelper();
   AuthService authService = AuthService();
+  FirebaseAuth auth =FirebaseAuth.instance;
   var mealType = 0;
+  List<String> allGroupName=[];
 
   void inputMeal() async {
     DateTime time = DateTime.now();
@@ -35,8 +39,31 @@ class _HomeScreen extends State<HomeScreen> {
     ;
   }
 
-  void signOut() {
-    authService.signOut(context);
+  void getGroupName() async {
+    DatabaseReference userRef = FirebaseDatabase.instance
+        .ref()
+        .child('user')
+        .child(auth.currentUser!.uid).child('groups');
+    userRef.onValue.listen((DatabaseEvent event){
+      if (event.snapshot.exists) {
+        final List<dynamic>? groupList = event.snapshot.value as List<dynamic>?;
+        if(groupList!= null){
+          setState(() {
+            allGroupName = groupList.cast<String>();
+          });
+        } else {
+          setState(() {
+            allGroupName = [];
+          });
+        }
+
+      } else {
+        setState(() {
+          allGroupName = "Name not found!" as List<String>;
+        });
+      }
+
+    });
   }
 
   @override
@@ -50,141 +77,23 @@ class _HomeScreen extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 10,),
-              Text('Input Day Meal'),
-              SizedBox(height: 10,),
-              TextField(
-                controller: meal,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Add Meal',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: inputMeal,
-                child: Text(
-                  'Submit',
-                  style: textTheme.headlineSmall,
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Text('Update Day Meal'),
-              SizedBox(height: 10,),
-              Container(
-                height: 200,
-                width: 400,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.lightGreen, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                    )
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text('Break First'),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(''),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.delete))
-                            ],
-                          ),
+          child: Container(
+            child: ListView.builder(
+                itemCount: allGroupName.length,
+                itemBuilder: (BuildContext context,int index){
+                  return Card(
+                      child: ListTile(
+                        title: Text(allGroupName[index],style: textTheme.headlineSmall),
+                        leading: CircleAvatar(
+                          child: Text(allGroupName[index][0],style: textTheme.headlineSmall),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text('Lunch'),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(''),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.delete))
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text('Dinner'),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(''),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.delete))
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Text('To-Day Bazar Input'),
-              SizedBox(height: 10,),
-              TextField(
-                controller: meal,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Item Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20,),
-              TextField(
-                controller: meal,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Item Price',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: inputMeal,
-                child: Text(
-                  'Submit',
-                  style: textTheme.headlineSmall,
-                ),
-              ),
-            ],
-          ),
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+                        },
+                      )
+                  );
+                }),
+          )
         ),
       ),
     );

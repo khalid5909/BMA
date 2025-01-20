@@ -100,11 +100,15 @@ class DatabaseHelper {
         'blockStatus': "no",
         'groupName': groupName,
         'adminName': adminEmail,
-        'membersList': [adminEmail, memberEmail],
-
+        'membersList': [adminEmail,memberEmail],
+        'breakFast':[],
+        'lunch':[],
+        'dinner':[],
+        'bazarItem':[],
+        'bazarPrice':[],
+        'memberBalance':[],
       };
       await groupRef.set(groupData);
-      await createProfile();
       return;
     } catch (e) {
       throw Exception("Failed to create group");
@@ -141,6 +145,12 @@ class DatabaseHelper {
       print("Failed to add member: $e");
       throw Exception("Failed to add member to the group");
     }
+  }
+
+  Future updateGroupName({required String groupName})async
+  {
+    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
+    databaseReference.push().update({'groups': [groupName]});
   }
 
 
@@ -200,6 +210,8 @@ class DatabaseHelper {
   }
 
 
+
+
   Future<List<String>> groupMemberList(String groupName) async {
     try {
       DatabaseReference groupRef = FirebaseDatabase.instance.ref()
@@ -226,12 +238,11 @@ class DatabaseHelper {
       final User?  singUpUser = (await auth.currentUser!.uid) as User?;
       if (singUpUser != null) {
         DatabaseReference userRef = rlDB.ref().child('user').child(singUpUser as String);
-        Map<String, dynamic> userData = {
-          'breakfirst': [],
+        await userRef.update({
+          'breakfast': [],
           'lunch':[],
           'dinner':[],
-        };
-        userRef.update(userData);
+        });
       }
       return singUpUser;
     } catch (e)
@@ -261,6 +272,23 @@ class DatabaseHelper {
     databaseReference.update({'dinner': [{'time':DateTime.now() , 'meal': meal}]});
 
   }
+
+  Future<void> getUserGroups() async {
+    DatabaseReference userGroupsRef = FirebaseDatabase.instance
+        .ref()
+        .child('user')
+        .child(auth.currentUser!.uid)
+        .child('groups');
+    userGroupsRef.onValue.listen((DatabaseEvent event){
+      if (event.snapshot.exists) {
+         event.snapshot.value as String;
+        print("User  is part of the following groups:");
+      } else {
+      print("User  is not part of any group.");
+      }
+    });
+  }
+
 
   Future<void> checkMemberAndRedirect(
       {required String currentUserEmail,required BuildContext context})async

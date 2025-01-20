@@ -1,3 +1,4 @@
+import 'package:bachelor_meal_asistance/presentation/screen/Management/member_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -125,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateGroup()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> MemberScreen()));
                         },
                         style: ElevatedButton.styleFrom(
                           fixedSize: Size(400, 60)

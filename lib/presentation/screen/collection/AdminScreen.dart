@@ -1,5 +1,5 @@
 import 'package:bachelor_meal_asistance/presentation/helper/GroupService.dart';
-import 'package:bachelor_meal_asistance/presentation/screen/Management/addMember.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/member_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import '../../uitils/Theme/theme.dart';
@@ -158,11 +158,7 @@ class _AdminscreenState extends State<Adminscreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddMember(
-                        currentUserId: currentUserId,
-                        currentUserEmail: currentUserEmail,
-                        currentUserName: currentUserName,
-                        currentgroupId: currentgroupId,
+                      builder: (context) => MemberScreen(
                       ),
                     ),
                   );

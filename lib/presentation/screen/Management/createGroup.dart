@@ -47,6 +47,7 @@ class _CreateGroupState extends State<CreateGroup> {
         adminEmail: auth.currentUser?.email as String,
         memberEmail: email.text.trim(),
       );
+      await database.updateGroupName(groupName: groupName.text.trim());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Group created successfully!")),
       );

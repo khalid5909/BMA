@@ -26,6 +26,8 @@ class AuthService {
           'userId': singUpUser.uid,
           'name': name,
           'email': email,
+          'phone':'',
+          'groups':[],
           'createdAt': DateTime.now().toIso8601String(),
         };
         userRef.set(userData);
