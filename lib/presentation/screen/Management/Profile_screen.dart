@@ -1,6 +1,7 @@
 import 'package:bachelor_meal_asistance/presentation/screen/Management/member_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   void signOut (){
     authService.signOut(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> Login()));
   }
   @override
   void initState() {

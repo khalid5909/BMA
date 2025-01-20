@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 
 class DatabaseHelper {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseDatabase rlDB = FirebaseDatabase.instance;
+  final FirebaseDatabase rtDB = FirebaseDatabase.instance;
+  DateTime time= DateTime.now();
+  List <String> groupName = [];
+  String? value = 'Value is Empty';
   String? phoneNumber;
 
   double? balanceNo;
@@ -15,7 +18,7 @@ class DatabaseHelper {
 
 
   Future<Map<String, dynamic>?> getBreakfast() async {
-    final DatabaseReference databaseReference = rlDB
+    final DatabaseReference databaseReference = rtDB
         .ref()
         .child('user')
         .child(auth.currentUser!.uid)
@@ -40,7 +43,7 @@ class DatabaseHelper {
   }
 
   Future<Map<String, dynamic>?> getLunch() async {
-    final DatabaseReference databaseReference = rlDB
+    final DatabaseReference databaseReference = rtDB
         .ref()
         .child('user')
         .child(auth.currentUser!.uid)
@@ -65,7 +68,7 @@ class DatabaseHelper {
   }
 
   Future<Map<String, dynamic>?> getDinner() async {
-    final DatabaseReference databaseReference = rlDB
+    final DatabaseReference databaseReference = rtDB
         .ref()
         .child('user')
         .child(auth.currentUser!.uid)
@@ -100,13 +103,13 @@ class DatabaseHelper {
         'blockStatus': "no",
         'groupName': groupName,
         'adminName': adminEmail,
-        'membersList': [adminEmail,memberEmail],
-        'breakFast':[],
-        'lunch':[],
-        'dinner':[],
-        'bazarItem':[],
-        'bazarPrice':[],
-        'memberBalance':[],
+        'membersList': [value],
+        'breakFast':[value],
+        'lunch':[value],
+        'dinner':[value],
+        'bazarItem':[value],
+        'bazarPrice':[value],
+        'memberBalance':[value],
       };
       await groupRef.set(groupData);
       return;
@@ -149,7 +152,7 @@ class DatabaseHelper {
 
   Future updateGroupName({required String groupName})async
   {
-    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
+    DatabaseReference databaseReference = rtDB.ref().child('user').child(auth.currentUser!.uid);
     databaseReference.push().update({'groups': [groupName]});
   }
 
@@ -237,7 +240,7 @@ class DatabaseHelper {
     try {
       final User?  singUpUser = (await auth.currentUser!.uid) as User?;
       if (singUpUser != null) {
-        DatabaseReference userRef = rlDB.ref().child('user').child(singUpUser as String);
+        DatabaseReference userRef = rtDB.ref().child('user').child(singUpUser as String);
         await userRef.update({
           'breakfast': [],
           'lunch':[],
@@ -252,25 +255,56 @@ class DatabaseHelper {
   }
 
 
-  Future addBreakfastMeal({required String meal})async
+  Future<void> addBreakfastMeal({required String meal})async
   {
-    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
-    databaseReference.update({'breakfast': [{'time':DateTime.now() , 'meal': meal}]});
+    DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
+        'user').child(auth.currentUser!.uid).child('groups');
+    groupRef.onValue.listen((DatabaseEvent event){
+      final List<dynamic>? data =  event.snapshot.value as List<String>?;
+      if (data!=null){
+         groupName = List<String>.from(data);
+      }
+    });
+    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('breakFast');
+    databaseReference.push().set({
+      'time': time,
+      'meal': meal,
+    });
 
   }
 
   Future addLunchMeal({required String meal})async
   {
-    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
-    databaseReference.update({'lunch': [{'time':DateTime.now() , 'meal': meal}]});
-
+    DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
+        'user').child(auth.currentUser!.uid).child('groups');
+    groupRef.onValue.listen((DatabaseEvent event){
+      final List<dynamic>? data =  event.snapshot.value as List<String>?;
+      if (data!=null){
+        groupName = List<String>.from(data);
+      }
+    });
+    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('lunch');
+    databaseReference.push().set({
+      'time': time,
+      'meal': meal,
+    });
   }
 
   Future addDinnerMeal({required String meal})async
   {
-    DatabaseReference databaseReference = rlDB.ref().child('user').child(auth.currentUser!.uid);
-    databaseReference.update({'dinner': [{'time':DateTime.now() , 'meal': meal}]});
-
+    DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
+        'user').child(auth.currentUser!.uid).child('groups');
+    groupRef.onValue.listen((DatabaseEvent event){
+      final List<dynamic>? data =  event.snapshot.value as List<String>?;
+      if (data!=null){
+        groupName = List<String>.from(data);
+      }
+    });
+    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('dinner');
+    databaseReference.push().set({
+      'time': time,
+      'meal': meal,
+    });
   }
 
   Future<void> getUserGroups() async {

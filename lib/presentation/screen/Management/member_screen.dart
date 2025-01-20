@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../../helper/GroupService.dart';
 import '../auth/databaseHelper.dart';
 
 class MemberScreen extends StatefulWidget {
@@ -72,6 +71,9 @@ class _MemberScreenState extends State<MemberScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text('Member List',style: textTheme.headlineMedium,)),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(

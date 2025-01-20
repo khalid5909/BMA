@@ -1,9 +1,8 @@
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
-import '../Management/Profile_screen.dart';
 
 
 class AuthService {
@@ -11,8 +10,9 @@ class AuthService {
   final FirebaseDatabase dbRef = FirebaseDatabase.instance;
   final DatabaseHelper databaseHelper =DatabaseHelper();
   UserDatabase userDatabase = UserDatabase();
+  String groupName= 'No Data';
 
-  Future signUp(
+  Future <void> signUp(
       {required String email,
       required String password,
       required String name,
@@ -27,36 +27,45 @@ class AuthService {
           'name': name,
           'email': email,
           'phone':'',
-          'groups':[],
+          'groups': [groupName],
           'createdAt': DateTime.now().toIso8601String(),
         };
         userRef.set(userData);
       }
-      return singUpUser;
     } catch (e)
     {
       print("Error during sign-up: $e");
     }
   }
 
-  Future<User?> loginUser( {required String email,required String password,required BuildContext context}) async {
+  Future<void> loginUser ({required String email,required String password,required BuildContext context}) async {
     try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      String? currentUserEmail = auth.currentUser?.email;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder:
-            (context) => const ProfileScreen(),
-        ),
-      );
-      //databaseHelper.checkMemberAndRedirect(currentUserEmail: currentUserEmail as String ,context: context);
-      return userCredential.user;
-
-    } catch (e) {
-      return null;
+      final User?  loginUser = (await auth.signInWithEmailAndPassword(
+          email: email, password: password)).user ;
+      if(loginUser!= null)
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder:
+                (context) => const HomeScreen(),
+            ),
+          );
+        }else
+      {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login Failed')));
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User not Found')));
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Wrong Password')));
+      }else if(e.code == 'invalid-email'){
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid Email')));
+      }
     }
   }
 

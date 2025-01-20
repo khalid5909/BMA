@@ -24,7 +24,7 @@ class _SignupState extends State<Signup> {
           const SnackBar(content: Text('Please fill in all fields')),
         );
       }else {
-        await auth.signUp(email: email.text, password: password.text, name: name.text);
+        await auth.signUp(email: email.text, password: password.text, name: name.text, );
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Login()),
@@ -32,7 +32,7 @@ class _SignupState extends State<Signup> {
             }
     }catch(e)
     {
-
+      ();
     }
   }
 

@@ -29,13 +29,14 @@ class _LoginState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
-    }else{
+    } else {
       await auth.loginUser( email:email.text, password:password.text,context: context,);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const BottomnavigationScreen()), // Ensure Signup is imported
       );
-
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Successful')));
     }
   }
 

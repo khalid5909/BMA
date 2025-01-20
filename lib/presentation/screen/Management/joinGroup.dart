@@ -2,7 +2,7 @@ import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../../helper/group_define.dart';
+import '../home_screen.dart';
 
 class JoinGroupPage extends StatefulWidget {
 
@@ -16,7 +16,7 @@ class JoinGroupPage extends StatefulWidget {
 class _JoinGroupPageState extends State<JoinGroupPage> {
   final  String? firebaseAuth= FirebaseAuth.instance.currentUser?.email;
   final TextEditingController searchController = TextEditingController();
-  List<Group>? searchResults = [];
+  List<String> searchResults = [];
   bool isLoading = false;
 
 
@@ -32,7 +32,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
 
       if (searchGroup.snapshot.value != null) {
         setState(() {
-          searchResults = searchGroup as List<Group>?;
+          searchResults = searchGroup as List<String>;
         });
       } else {
         setState(() {
@@ -71,6 +71,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Join Group')),
       body: Padding(
@@ -98,15 +99,24 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             const SizedBox(height: 10),
             if (isLoading)
               const Center(child: CircularProgressIndicator())
-            else if (searchResults == null || searchResults!.isEmpty)
+            else if (searchResults.isEmpty)
               const Text('No results found.'),
-            if (searchResults != null && searchResults!.isNotEmpty)
+            if (searchResults.isNotEmpty)
               Expanded(
                 child: ListView.builder(
-                  itemCount: searchResults!.length,
-                  itemBuilder: (context, index) {
-                    final group = searchResults![index];
-                    return ;
+                  itemCount: searchResults.length,
+                  itemBuilder: (BuildContext context,int index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(searchResults[index],style: textTheme.headlineSmall),
+                        leading: CircleAvatar(
+                          child: Text(searchResults[index][0],style: textTheme.headlineSmall),
+                        ),
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+                        },
+                      ),
+                    );
                   },
                 ),
               ),
