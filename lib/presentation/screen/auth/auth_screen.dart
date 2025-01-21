@@ -1,5 +1,5 @@
+import 'package:bachelor_meal_asistance/presentation/screen/Management/Dashboard_screan.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
-import 'package:bachelor_meal_asistance/presentation/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ class AuthService {
           Navigator.push(
             context,
             MaterialPageRoute(builder:
-                (context) => const HomeScreen(),
+                (context) => const DashboardScrean(),
             ),
           );
         }else

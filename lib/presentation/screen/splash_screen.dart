@@ -1,4 +1,5 @@
 import 'package:bachelor_meal_asistance/presentation/screen/Management/bottomNavigation_Screen.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/wrapper.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/signup_screen.dart';
 import 'package:flutter/material.dart';
 import '../uitils/image_asset.dart';
@@ -19,7 +20,7 @@ class _SplashState extends State<Splash> {
   void goToNextScreen(){
     Future.delayed(const Duration(seconds: 3)).then((value){
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
-       const Signup()),(route)=>false);
+       const Wrapper()),(route)=>false);
     }
     );
   }
