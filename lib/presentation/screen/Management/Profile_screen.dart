@@ -21,7 +21,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   FirebaseAuth auth=FirebaseAuth.instance;
   AuthService authService = AuthService();
   DatabaseHelper databaseHelper = DatabaseHelper();
-  UserDatabase userDatabase = UserDatabase();
   String userName = 'Loding ...' ;
   String email = 'Loding ...';
 

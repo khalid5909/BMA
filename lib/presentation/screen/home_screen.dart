@@ -25,20 +25,6 @@ class _HomeScreen extends State<HomeScreen> {
   var mealType = 0;
   List<String> allGroupName=[];
 
-  void inputMeal() async {
-    DateTime time = DateTime.now();
-    int hour = time.hour;
-
-    if (hour >= 20 && hour <= 6) {
-      databaseHelper.addBreakfastMeal(meal: meal.text.trim());
-    } else if (hour >= 21 && hour <= 8) {
-      databaseHelper.addLunchMeal(meal: meal.text.trim());
-    } else if (hour >= 13 && hour <= 18) {
-      databaseHelper.addDinnerMeal(meal: meal.text.trim());
-    }
-    ;
-  }
-
   void getGroupName() async {
     DatabaseReference userRef = FirebaseDatabase.instance
         .ref()

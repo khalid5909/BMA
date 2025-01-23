@@ -12,57 +12,34 @@ class MemberScreen extends StatefulWidget {
 class _MemberScreenState extends State<MemberScreen> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   FirebaseAuth auth =FirebaseAuth.instance;
-  List<String> membersList =[];
+  List<String> data =[];
   List <String> groupName = [];
 
-  void getGroupName() async {
-
-    DatabaseReference userRef = FirebaseDatabase.instance
-        .ref()
-        .child('user')
-        .child(auth.currentUser!.uid).child('groups');
-    userRef.onValue.listen((DatabaseEvent event){
-      if (event.snapshot.exists) {
-        final List<dynamic> data = event.snapshot.value as List<dynamic>;
-        setState(() {
-          groupName = List<String>.from(data);
-        });
-      } else {
-        setState(() {
-          groupName = "Name not found!" as List<String>;
-        });
-      }
-
-    });
-  }
-  void getGrouMember()async
+  void searchMemberEmail()async
   {
-    DatabaseReference databaseReference = FirebaseDatabase.instance
-        .ref()
-        .child('groups')
-        .child(groupName as String)
-        .child('membersList');
-    databaseReference.onValue.listen((DatabaseEvent event){
-      if (event.snapshot.exists){
-        final List<dynamic>? groupList = event.snapshot.value as List<dynamic>?;
-        if(groupList!= null){
-          setState(() {
-            membersList = groupList.cast<String>();
-          });
-        } else {
-          setState(() {
-            membersList = [];
-          });
-        }
+    final snapshot = await FirebaseDatabase.instance.ref().child('groups').orderByChild('member').get();
+    if (snapshot.exists) {
+      final Map<dynamic, dynamic>? values =
+      snapshot.value as Map<dynamic, dynamic>?;
+      if (values != null) {
+        setState(() {
+          data = values.values.map((e) => e.toString()).toList();
+        });
       }
-    });
+    } else {
+      setState(() {
+        data = [];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No data found!')),
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getGroupName();
-    getGrouMember();
+    searchMemberEmail();
   }
 
 
@@ -79,13 +56,13 @@ class _MemberScreenState extends State<MemberScreen> {
         child: SingleChildScrollView(
             child: Container(
               child: ListView.builder(
-                  itemCount: membersList.length,
+                  itemCount: data.length,
                   itemBuilder: (BuildContext context,int index){
                     return Card(
                         child: ListTile(
-                          title: Text(membersList[index],style: textTheme.headlineSmall),
+                          title: Text(data[index],style: textTheme.headlineSmall),
                           leading: CircleAvatar(
-                            child: Text(membersList[index][0],style: textTheme.headlineSmall),
+                            child: Text(data[index][0],style: textTheme.headlineSmall),
                           ),
                         )
                     );

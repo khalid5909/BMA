@@ -1,28 +1,28 @@
 
-import 'package:bachelor_meal_asistance/presentation/screen/home_screen.dart';
-import 'package:bachelor_meal_asistance/presentation/screen/login_screen.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/groupDashboard_screan.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/member_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'Profile_screen.dart';
-import 'myGroups.dart';
 
-class BottomnavigationScreen extends StatefulWidget {
-  const BottomnavigationScreen({super.key});
+class BotNavBarForDas extends StatefulWidget {
+  const BotNavBarForDas({super.key});
 
   @override
-  State<BottomnavigationScreen> createState() => _BottomnavigationScreenState();
+  State<BotNavBarForDas> createState() => _BotNavBarForDasState();
 }
 
-class _BottomnavigationScreenState extends State<BottomnavigationScreen> {
+class _BotNavBarForDasState extends State<BotNavBarForDas> {
   final user = FirebaseAuth.instance.currentUser;
 
   int _selectedIndex = 0;
 
+
   // Pages for BottomNavigationBar
   final List<Widget> _pages = [
-    HomeScreen(),
-    MyGroups(),
+    GroupDashboardScreen(groupName: '',),
+    MemberScreen(),
     ProfileScreen(),
   ];
 
@@ -39,16 +39,16 @@ class _BottomnavigationScreenState extends State<BottomnavigationScreen> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex:
-            _selectedIndex, // Add currentIndex to reflect the selected index
+        _selectedIndex, // Add currentIndex to reflect the selected index
         onTap: _itemTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.dashboard),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.groups),
-            label: "My Group",
+            icon: Icon(Icons.person_4),
+            label: "Search",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

@@ -1,96 +1,168 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../auth/auth_screen.dart';
 import '../auth/databaseHelper.dart';
-import 'Profile_screen.dart';
-
+import 'groupDashboard_screan.dart';
+import 'bottomNavBarForDasboard.dart';
 
 class CreateGroup extends StatefulWidget {
-
-  const CreateGroup({super.key,});
+  const CreateGroup({super.key});
 
   @override
   _CreateGroupState createState() => _CreateGroupState();
 }
 
 class _CreateGroupState extends State<CreateGroup> {
-  DatabaseHelper database = DatabaseHelper();
-  FirebaseAuth auth = FirebaseAuth.instance;
-  AuthService authService = AuthService();
-
+  final DatabaseHelper database = DatabaseHelper();
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final TextEditingController groupName = TextEditingController();
   final TextEditingController email = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
+  bool isLoading = false;
 
   Future<void> createGroup() async {
-    if (groupName.text.isEmpty) {
+    if (groupName.text.trim().isEmpty || email.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Group name cannot be empty")),
+        const SnackBar(content: Text("Group name and email are required!")),
       );
       return;
     }
-    if (email.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Add at least one member")),
-      );
-      return;
-    }
-    final String? adminEmail = FirebaseAuth.instance.currentUser?.email;
-    if (adminEmail == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Admin email not found. Please log in again.")),
-      );
-      return;
-    }
+
     try {
       await database.createGroup(
         groupName: groupName.text.trim(),
-        adminEmail: auth.currentUser?.email as String,
+        adminEmail: auth.currentUser?.email ?? '',
         memberEmail: email.text.trim(),
       );
-      await database.updateGroupName(groupName: groupName.text.trim());
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Group created successfully!")),
+        const SnackBar(content: Text("Group created successfully!")),
       );
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BotNavBarForDas()),
+      );
     } catch (e) {
-      print("Error creating group: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to create group")),
+        SnackBar(content: Text("Failed to create group: $e")),
       );
     }
   }
 
+  Future<void> searchEmail(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        searchResults = [];
+      });
+      return;
+    }
 
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final snapshot =
+      await FirebaseDatabase.instance.ref().child('user').get();
+
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+
+        final filteredResults = data.entries
+            .where((entry) {
+          final user = entry.value as Map<dynamic, dynamic>;
+          return user['email']
+              .toString()
+              .toLowerCase()
+              .contains(query.toLowerCase());
+        })
+            .map((entry) {
+          final user = entry.value as Map<dynamic, dynamic>;
+          return {
+            'email': user['email'] ?? 'No Email',
+            'name': user['name'] ?? 'No Name',
+          };
+        })
+            .toList();
+
+        setState(() {
+          searchResults = List<Map<String, dynamic>>.from(filteredResults);
+        });
+      } else {
+        setState(() {
+          searchResults = [];
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error searching emails: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Group')),
+      appBar: AppBar(title: const Text('Create Group')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: groupName,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Add Group Name',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
+              onChanged: searchEmail,
               controller: email,
               decoration: InputDecoration(
-                labelText: 'Member Email',
-                border: OutlineInputBorder(),
+                labelText: 'User Email',
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () => searchEmail(email.text),
+                ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: createGroup,
-              child: Text('Create Group'),
+              child: const Text('Create Group'),
+            ),
+            const SizedBox(height: 20),
+            isLoading
+                ? const CircularProgressIndicator()
+                : Expanded(
+              child: ListView.builder(
+                itemCount: searchResults.length,
+                itemBuilder: (context, index) {
+                  final result = searchResults[index];
+                  return Card(
+                    margin: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: Text('${index + 1}'),
+                      ),
+                      title: Text(result['name']),
+                      subtitle: Text(result['email']),
+                      onTap: (){
+                        setState(() {
+                          email.text = result['email'];
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

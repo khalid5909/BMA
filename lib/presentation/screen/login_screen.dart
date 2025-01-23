@@ -1,6 +1,6 @@
+import 'package:bachelor_meal_asistance/presentation/screen/Management/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'Management/Dashboard_screan.dart';
 import 'signup_screen.dart';
 
 class Login extends StatefulWidget {
@@ -17,13 +17,20 @@ class _LoginState extends State<Login> {
 
 
   signIn()async{
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder:
-          (context) => const DashboardScrean(),
-      ),
-    );
+    User ? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text)).user;
+    if(user!= null)
+    {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder:
+            (context) => const Wrapper(),
+        ),
+      );
+    }else
+    {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Failed')));
+    }
   }
 
 
@@ -49,12 +56,19 @@ class _LoginState extends State<Login> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: (()=> signIn) ,
+              onPressed: (()=> signIn()) ,
               child: const Text('Login'),
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: (() => Signup),
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder:
+                      (context) => const Signup(),
+                  ),
+                );
+              },
               child: const Text("Don't have an account? Signup"),
             ),
           ],

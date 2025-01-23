@@ -1,4 +1,4 @@
-import 'package:bachelor_meal_asistance/presentation/screen/Management/Dashboard_screan.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/groupDashboard_screan.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -9,8 +9,6 @@ class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseDatabase dbRef = FirebaseDatabase.instance;
   final DatabaseHelper databaseHelper =DatabaseHelper();
-  UserDatabase userDatabase = UserDatabase();
-  String groupName= 'No Data';
 
   Future <void> signUp(
       {required String email,
@@ -27,7 +25,6 @@ class AuthService {
           'name': name,
           'email': email,
           'phone':'',
-          'groups': [groupName],
           'createdAt': DateTime.now().toIso8601String(),
         };
         userRef.set(userData);
@@ -47,7 +44,7 @@ class AuthService {
           Navigator.push(
             context,
             MaterialPageRoute(builder:
-                (context) => const DashboardScrean(),
+                (context) =>  GroupDashboardScreen(groupName: '',),
             ),
           );
         }else

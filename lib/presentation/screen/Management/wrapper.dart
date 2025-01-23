@@ -1,6 +1,5 @@
 import 'package:bachelor_meal_asistance/presentation/screen/Management/bottomNavigation_Screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/login_screen.dart';
-import 'package:bachelor_meal_asistance/presentation/screen/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,11 +15,14 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      body: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(), builder: (context,snapshot){
+      body: StreamBuilder <User?> (stream: FirebaseAuth.instance.authStateChanges(), builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
         if (snapshot.hasData){
-          return Login();
+          return BottomnavigationScreen();
         }else{
-          return Signup();
+          return Login();
         }
       }),
     );

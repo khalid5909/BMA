@@ -8,8 +8,8 @@ class DatabaseHelper {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseDatabase rtDB = FirebaseDatabase.instance;
   DateTime time= DateTime.now();
-  List <String> groupName = [];
-  String? value = 'Value is Empty';
+  List <dynamic> groupName = [];
+
   String? phoneNumber;
 
   double? balanceNo;
@@ -89,77 +89,67 @@ class DatabaseHelper {
       return null;
     }
   }
-
-
-
-  Future createGroup(
-      {required String groupName, required String adminEmail, required memberEmail}) async
-  {
+  Future createGroup({
+    required String groupName,
+    required String adminEmail,
+    required String memberEmail,
+  }) async {
     try {
-      DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
-          'groups').child(groupName);
+      // 1. Create group data in 'groups' node
+      DatabaseReference groupRef =
+      FirebaseDatabase.instance.ref().child('groups').child(groupName);
+
       Map<String, dynamic> groupData = {
         'createdAt': DateTime.now().toIso8601String(),
         'blockStatus': "no",
         'groupName': groupName,
         'adminName': adminEmail,
-        'membersList': [value],
-        'breakFast':[value],
-        'lunch':[value],
-        'dinner':[value],
-        'bazarItem':[value],
-        'bazarPrice':[value],
-        'memberBalance':[value],
+        'members': [adminEmail, memberEmail],
+        'breakFast': 'Value is Empty',
+        'lunch': 'Value is Empty',
+        'dinner': 'Value is Empty',
+        'bazarItem': 'Value is Empty',
+        'bazarPrice': 'Value is Empty',
+        'memberBalance': 'Value is Empty',
       };
+
       await groupRef.set(groupData);
-      return;
-    } catch (e) {
-      throw Exception("Failed to create group");
-    }
-  }
 
-  Future<void> addMemberToGroup({
-    required String groupName,
-    required String newMemberEmail,
-  }) async {
-    try {
+      // 2. Add group name to each user's 'groups' list
+      for (String email in [adminEmail, memberEmail]) {
+        final snapshot = await FirebaseDatabase.instance
+            .ref()
+            .child('user')
+            .orderByChild('email')
+            .equalTo(email)
+            .get();
 
-      DatabaseReference memberListRef = FirebaseDatabase.instance
-          .ref()
-          .child('groups')
-          .child(groupName)
-          .child('membersList');
-      DatabaseEvent event = await memberListRef.once();
+        if (snapshot.exists) {
+          final userId = snapshot.children.first.key;
 
-      if (event.snapshot.exists && event.snapshot.value != null) {
-        List<dynamic> currentData = List.from(event.snapshot.value as List);
-        if (!currentData.contains(newMemberEmail)) {
-          currentData.add(newMemberEmail);
-          await memberListRef.set(currentData);
-          print("Member added successfully!");
-        } else {
-          print("Member already exists in the group!");
+          if (userId != null) {
+            final userRef =
+            FirebaseDatabase.instance.ref().child('user').child(userId);
+
+            final userSnapshot = await userRef.child('groups').get();
+
+            if (userSnapshot.exists) {
+              List<dynamic> existingGroups = List<dynamic>.from(userSnapshot.value as List);
+              if (!existingGroups.contains(groupName)) {
+                existingGroups.add(groupName);
+                await userRef.update({'groups': existingGroups});
+              }
+            } else {
+              // If 'groups' does not exist, create a new list
+              await userRef.update({'groups': [groupName]});
+            }
+          }
         }
-      } else {
-        await memberListRef.set([newMemberEmail]);
-        print("New member list created with the added member!");
       }
     } catch (e) {
-      print("Failed to add member: $e");
-      throw Exception("Failed to add member to the group");
+      throw Exception("Failed to create group: $e");
     }
   }
-
-  Future updateGroupName({required String groupName})async
-  {
-    DatabaseReference databaseReference = rtDB.ref().child('user').child(auth.currentUser!.uid);
-    databaseReference.push().update({'groups': [groupName]});
-  }
-
-
-
-
-
 
   Future joinGroup({required String groupName, required String memberEmail}) async
   {
@@ -255,53 +245,31 @@ class DatabaseHelper {
   }
 
 
-  Future<void> addBreakfastMeal({required String meal})async
+  Future<void> addBreakfastMeal({required String meal,required String groupName})async
   {
     DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
-        'user').child(auth.currentUser!.uid).child('groups');
-    groupRef.onValue.listen((DatabaseEvent event){
-      final List<dynamic>? data =  event.snapshot.value as List<String>?;
-      if (data!=null){
-         groupName = List<String>.from(data);
-      }
-    });
-    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('breakFast');
-    databaseReference.push().set({
+        'groups').child(groupName).child('breakfast');
+    groupRef.push().set({
       'time': time,
       'meal': meal,
     });
 
   }
 
-  Future addLunchMeal({required String meal})async
-  {
-    DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
-        'user').child(auth.currentUser!.uid).child('groups');
-    groupRef.onValue.listen((DatabaseEvent event){
-      final List<dynamic>? data =  event.snapshot.value as List<String>?;
-      if (data!=null){
-        groupName = List<String>.from(data);
-      }
-    });
-    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('lunch');
-    databaseReference.push().set({
-      'time': time,
-      'meal': meal,
-    });
+  Future addLunchMeal({required String meal,required String groupName})async
+  {DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
+      'groups').child(groupName).child('breakfast');
+  groupRef.push().set({
+    'time': time,
+    'meal': meal,
+  });
   }
 
-  Future addDinnerMeal({required String meal})async
+  Future addDinnerMeal({required String meal,required String groupName})async
   {
     DatabaseReference groupRef = FirebaseDatabase.instance.ref().child(
-        'user').child(auth.currentUser!.uid).child('groups');
-    groupRef.onValue.listen((DatabaseEvent event){
-      final List<dynamic>? data =  event.snapshot.value as List<String>?;
-      if (data!=null){
-        groupName = List<String>.from(data);
-      }
-    });
-    DatabaseReference databaseReference = rtDB.ref().child('groups').child(groupName as String ).child('dinner');
-    databaseReference.push().set({
+        'groups').child(groupName).child('breakfast');
+    groupRef.push().set({
       'time': time,
       'meal': meal,
     });
@@ -369,28 +337,7 @@ class DatabaseHelper {
 
 
 
-class UserDatabase {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseDatabase rlDB = FirebaseDatabase.instance;
 
-
-  Future searchUserByEmail ({required String email})async
-  {
-    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('user');
-    final DataSnapshot snapshot = await usersRef.get();
-    if (snapshot.exists){
-      Map<String,dynamic> allUsers = snapshot.value as Map<String,dynamic>;
-      for (var email in allUsers.keys){
-        final user = allUsers[email] as Map<String,dynamic>;
-        if(user['email'] == email){
-          return user;
-        }
-      }
-    }
-  }
-
-
-}
 
 
 
