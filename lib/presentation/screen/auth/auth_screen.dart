@@ -1,5 +1,6 @@
-import 'package:bachelor_meal_asistance/presentation/screen/Management/groupDashboard_screan.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/group_dashboard_screan.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/databaseHelper.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class AuthService {
           Navigator.push(
             context,
             MaterialPageRoute(builder:
-                (context) =>  GroupDashboardScreen(groupName: '',),
+                (context) =>  HomeScreen(),
             ),
           );
         }else

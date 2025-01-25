@@ -1,11 +1,9 @@
-import 'package:bachelor_meal_asistance/presentation/screen/Management/joinGroup.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/auth/auth_screen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../uitils/Theme/theme.dart';
-import 'Management/createGroup.dart';
+import 'package:flutter/services.dart';
 import 'auth/databaseHelper.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,8 +53,13 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    return WillPopScope(
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
 
-    return Scaffold(
+    child:  Scaffold(
       appBar: AppBar(
         title: Text('Home'),
       ),
@@ -82,6 +85,7 @@ class _HomeScreen extends State<HomeScreen> {
           )
         ),
       ),
+    ),
     );
   }
 }

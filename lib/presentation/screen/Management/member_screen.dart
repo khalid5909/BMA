@@ -13,11 +13,11 @@ class _MemberScreenState extends State<MemberScreen> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   FirebaseAuth auth =FirebaseAuth.instance;
   List<String> data =[];
-  List <String> groupName = [];
+  String? groupName;
 
-  void searchMemberEmail()async
+  void searchMemberInGroup()async
   {
-    final snapshot = await FirebaseDatabase.instance.ref().child('groups').orderByChild('member').get();
+    final snapshot = await FirebaseDatabase.instance.ref().child('groups').child(groupName!).child('groupMembers').get();
     if (snapshot.exists) {
       final Map<dynamic, dynamic>? values =
       snapshot.value as Map<dynamic, dynamic>?;
@@ -39,7 +39,7 @@ class _MemberScreenState extends State<MemberScreen> {
   @override
   void initState() {
     super.initState();
-    searchMemberEmail();
+    searchMemberInGroup();
   }
 
 

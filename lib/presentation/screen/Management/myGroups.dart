@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'bottomNavBarForDasboard.dart';
-import 'groupDashboard_screan.dart';
 
 class MyGroups extends StatefulWidget {
   const MyGroups({super.key});
@@ -79,7 +78,7 @@ class _MyGroupsState extends State<MyGroups> {
           : ListView.builder(
         itemCount: groupData.length,
         itemBuilder: (context, index) {
-          final groupName = groupData[index];  // Directly access the group name
+          final String groupName = groupData[index];  // Directly access the group name
           return Card(
             margin: const EdgeInsets.all(8.0),
             child: ListTile(
@@ -87,6 +86,7 @@ class _MyGroupsState extends State<MyGroups> {
               subtitle: Text('Index: $index'),
               leading: CircleAvatar(child: Text('${index + 1}')),
               onTap: () {
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(

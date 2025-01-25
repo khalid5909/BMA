@@ -1,5 +1,5 @@
 
-import 'package:bachelor_meal_asistance/presentation/screen/Management/groupDashboard_screan.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/group_dashboard_screan.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/Management/member_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +15,9 @@ class BotNavBarForDas extends StatefulWidget {
 
 class _BotNavBarForDasState extends State<BotNavBarForDas> {
   final user = FirebaseAuth.instance.currentUser;
-
   int _selectedIndex = 0;
-
-
-  // Pages for BottomNavigationBar
   final List<Widget> _pages = [
-    GroupDashboardScreen(groupName: '',),
+    GroupDashboardScreen(),
     MemberScreen(),
     ProfileScreen(),
   ];
@@ -44,15 +40,15 @@ class _BotNavBarForDasState extends State<BotNavBarForDas> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
-            label: "Home",
+            label: "Dashboard Input",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_4),
-            label: "Search",
+            icon: Icon(Icons.dashboard_customize_outlined),
+            label: "Dashboard",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: "Profile",
+            label: "Group Info",
           ),
         ],
       ),

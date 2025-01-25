@@ -1,4 +1,4 @@
-import 'package:bachelor_meal_asistance/presentation/screen/Management/bottomNavigation_Screen.dart';
+import 'package:bachelor_meal_asistance/presentation/screen/Management/bottomNavigationScreen.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/Management/wrapper.dart';
 import 'package:bachelor_meal_asistance/presentation/screen/signup_screen.dart';
 import 'package:flutter/material.dart';

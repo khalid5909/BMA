@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../auth/databaseHelper.dart';
-import 'groupDashboard_screan.dart';
 import 'bottomNavBarForDasboard.dart';
 
 class CreateGroup extends StatefulWidget {

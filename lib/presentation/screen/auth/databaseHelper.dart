@@ -95,7 +95,7 @@ class DatabaseHelper {
     required String memberEmail,
   }) async {
     try {
-      // 1. Create group data in 'groups' node
+
       DatabaseReference groupRef =
       FirebaseDatabase.instance.ref().child('groups').child(groupName);
 
@@ -104,16 +104,11 @@ class DatabaseHelper {
         'blockStatus': "no",
         'groupName': groupName,
         'adminName': adminEmail,
-        'members': [adminEmail, memberEmail],
-        'breakFast': 'Value is Empty',
-        'lunch': 'Value is Empty',
-        'dinner': 'Value is Empty',
-        'bazarItem': 'Value is Empty',
-        'bazarPrice': 'Value is Empty',
-        'memberBalance': 'Value is Empty',
       };
-
+      Map <String,dynamic> memberData={'adminEmail': adminEmail,
+      'memberEmail':memberEmail};
       await groupRef.set(groupData);
+      await groupRef.child('groupMembers').push().update(memberData);
 
       // 2. Add group name to each user's 'groups' list
       for (String email in [adminEmail, memberEmail]) {
